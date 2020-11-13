@@ -1,2 +1,5 @@
 *.asv
 *.patch
+slprj/
+*.slxc
+fig/
