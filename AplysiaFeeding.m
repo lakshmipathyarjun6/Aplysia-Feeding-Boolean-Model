@@ -698,10 +698,7 @@ classdef AplysiaFeeding
 
                 sim('AplysiaFeedingSimulation');
                 
-%                 disp(grasper_vars.signals);
-%                 grasp_values = grasper_vars.signals.values;
-                
-                disp(body_vars.signals);
+                grasp_values = grasper_vars.signals.values;
                 body_values = body_vars.signals.values;
 
             %% Grasper Forces
@@ -799,9 +796,8 @@ classdef AplysiaFeeding
                     end
                 end
                 
-%                 disp(grasp_values);
-%                 fprintf('%d %d %d %d %d %d\n', F_f_g, grasp_values(1,1), F_f_g - grasp_values(1,1), B2, grasp_values(1,5), B2 - grasp_values(1,5));
-%                 fprintf('%d %d %d %d %d %d\n', A21, grasp_values(1,2), A21 - grasp_values(1,2), A22, grasp_values(1,3), A22 - grasp_values(1,3));
+                fprintf('%d %d %d %d %d %d\n', F_f_g, grasp_values(1,1), F_f_g - grasp_values(1,1), B2, grasp_values(1,5), B2 - grasp_values(1,5));
+                fprintf('%d %d %d %d %d %d\n', A21, grasp_values(1,2), A21 - grasp_values(1,2), A22, grasp_values(1,3), A22 - grasp_values(1,3));
 %                  
                 %[j*dt position_grasper_relative I2 F_sp I3 hinge GrapserPressure_last F_g]
 
@@ -874,12 +870,8 @@ classdef AplysiaFeeding
                             %F_f_g = -sign(F_I2+F_sp_g-F_I3-F_Hi)*mechanical_in_grasper*mu_k_g*F_I4;
                                 disp('all kinetic')
                                 A1 = A1 + 1/obj.c_h*A1_h;
-                                B1 = B1 + 1/obj.c_h*(-sign(F_comb_h-F_I3-F_hinge)*obj.sens_mechanical_grasper(j)*obj.mu_k_g*F_I4 + B1_h);                
-                            end
-                            
-                            debug_values = debug.signals.values;
-                            fprintf('%d %d %d %d\n', F_I3, F_I4, F_hinge, F_comb_h);
-                            fprintf('%d %d %d %d\n', debug_values(1), debug_values(2), debug_values(3), debug_values(4));
+                                B1 = B1 + 1/obj.c_h*(-sign(F_comb_h-F_I3-F_hinge)*obj.sens_mechanical_grasper(j)*obj.mu_k_g*F_I4 + B1_h);
+                            end  
                             
                             A11= A1(1);
                             A12 = A1(2);
@@ -901,9 +893,6 @@ classdef AplysiaFeeding
 
                     end
                 end
-                
-%                 debug_values = debug.signals.values;
-%                 fprintf('%d %d\n', Blurch, debug_values(1));
 
                 fprintf('%d %d %d %d %d %d\n', F_f_h, body_values(1,1), F_f_h - body_values(1,1), B1, body_values(1,5), B1 - body_values(1,5));
                                 
