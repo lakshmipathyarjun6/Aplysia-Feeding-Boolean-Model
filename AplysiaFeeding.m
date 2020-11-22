@@ -143,6 +143,7 @@ classdef AplysiaFeeding
             assignin('base','mu_k_g',obj.mu_k_g);
             assignin('base','mu_s_h',obj.mu_s_h);
             assignin('base','mu_k_h',obj.mu_k_h);
+            assignin('base','seaweed_strength',obj.seaweed_strength);
 
 
             %neural state variables
@@ -698,11 +699,12 @@ classdef AplysiaFeeding
 
                 sim('AplysiaFeedingSimulation');
                 
-%                 disp(grasper_vars.signals);
-%                 grasp_values = grasper_vars.signals.values;
-                
-                disp(body_vars.signals);
+                grasp_values = grasper_vars.signals.values;
                 body_values = body_vars.signals.values;
+                x_next_exp = x_next.signals.values;
+                unbroken_next_exp = unbroken_next.signals.values;
+                
+%                 debugsig_vals = debugsig.signals.values;
 
             %% Grasper Forces
             %all forces in form F = Ax+b
@@ -739,11 +741,11 @@ classdef AplysiaFeeding
 
                     %the force on the object is approximated based on the friction
                     if(abs(F_comb) <= abs(F_sf_range)) % static friction is true
-                        %disp('static')
+                        disp('static unconstrained')
                         F_f_g = -obj.sens_mechanical_grasper(j)*(F_comb);
                         obj.grasper_friction_state(j+1) = 1;
                     else
-                        %disp('kinetic')
+                        disp('kinetic unconstrained')
                         F_f_g = obj.sens_mechanical_grasper(j)*F_kf_range;
                         %specify sign of friction force
                         F_f_g = -(F_comb)/abs(F_comb)*F_f_g;
@@ -753,7 +755,7 @@ classdef AplysiaFeeding
                 elseif (obj.fixation_type(j) == 1) %object is fixed to a contrained surface
                     if unbroken
                         if(abs(F_comb) <= abs(F_sf_range)) % static friction is true
-%                             disp('static')
+                            disp('static constrained unbroken')
                             F_f_g = -obj.sens_mechanical_grasper(j)*(F_comb);
                             %F_g = F_I2+F_sp_g-F_I3-F_hinge + F_f_g;
                             obj.grasper_friction_state(j+1) = 1;
@@ -764,7 +766,7 @@ classdef AplysiaFeeding
                             B2 = 0;
                             
                         else
-%                             disp('kinetic')
+                            disp('kinetic constrained unbroken')
                             F_f_g = -sign(F_comb)*obj.sens_mechanical_grasper(j)*F_kf_range;
                             %specify sign of friction force
                             %F_g = F_I2+F_sp_g-F_I3-F_hinge + F_f_g;
@@ -786,11 +788,11 @@ classdef AplysiaFeeding
 
                         %the force on the object is approximated based on the friction
                         if(abs(F_comb) <= abs(F_sf_range)) % static friction is true
-                            %disp('static')
+                            disp('static constrained broken')
                             F_f_g = -obj.sens_mechanical_grasper(j)*(F_comb);
                             obj.grasper_friction_state(j+1) = 1;
                         else
-                            %disp('kinetic')
+                            disp('kinetic constrained broken')
                             F_f_g = obj.sens_mechanical_grasper(j)*F_kf_range;
                             %specify sign of friction force
                             F_f_g = -(F_comb)/abs(F_comb)*F_f_g;
@@ -799,9 +801,8 @@ classdef AplysiaFeeding
                     end
                 end
                 
-%                 disp(grasp_values);
-%                 fprintf('%d %d %d %d %d %d\n', F_f_g, grasp_values(1,1), F_f_g - grasp_values(1,1), B2, grasp_values(1,5), B2 - grasp_values(1,5));
-%                 fprintf('%d %d %d %d %d %d\n', A21, grasp_values(1,2), A21 - grasp_values(1,2), A22, grasp_values(1,3), A22 - grasp_values(1,3));
+                fprintf('grasper F and B values %d %d %d %d %d %d\n', F_f_g, grasp_values(1,1), F_f_g - grasp_values(1,1), B2, grasp_values(1,5), B2 - grasp_values(1,5));
+                fprintf('grasper A values %d %d %d %d %d %d\n', A21, grasp_values(1,2), A21 - grasp_values(1,2), A22, grasp_values(1,3), A22 - grasp_values(1,3));
 %                  
                 %[j*dt position_grasper_relative I2 F_sp I3 hinge GrapserPressure_last F_g]
 
@@ -874,12 +875,11 @@ classdef AplysiaFeeding
                             %F_f_g = -sign(F_I2+F_sp_g-F_I3-F_Hi)*mechanical_in_grasper*mu_k_g*F_I4;
                                 disp('all kinetic')
                                 A1 = A1 + 1/obj.c_h*A1_h;
-                                B1 = B1 + 1/obj.c_h*(-sign(F_comb_h-F_I3-F_hinge)*obj.sens_mechanical_grasper(j)*obj.mu_k_g*F_I4 + B1_h);                
+                                B1 = B1 + 1/obj.c_h*(-sign(F_comb_h-F_I3-F_hinge)*obj.sens_mechanical_grasper(j)*obj.mu_k_g*F_I4 + B1_h);
                             end
                             
-                            debug_values = debug.signals.values;
-                            fprintf('%d %d %d %d\n', F_I3, F_I4, F_hinge, F_comb_h);
-                            fprintf('%d %d %d %d\n', debug_values(1), debug_values(2), debug_values(3), debug_values(4));
+%                             disp(A2)
+%                             disp(debugsig_vals)
                             
                             A11= A1(1);
                             A12 = A1(2);
@@ -901,11 +901,9 @@ classdef AplysiaFeeding
 
                     end
                 end
-                
-%                 debug_values = debug.signals.values;
-%                 fprintf('%d %d\n', Blurch, debug_values(1));
 
-                fprintf('%d %d %d %d %d %d\n', F_f_h, body_values(1,1), F_f_h - body_values(1,1), B1, body_values(1,5), B1 - body_values(1,5));
+                fprintf('body F and B values %d %d %d %d %d %d\n', F_f_h, body_values(1,5), F_f_h - body_values(1,5), B1, body_values(1,1), B1 - body_values(1,1));
+                fprintf('body A values %d %d %d %d %d %d\n', A11, body_values(1,4), A11 - body_values(1,4), A12, body_values(1,3), A12 - body_values(1,3));
                                 
                 %[position_buccal_last F_h F_sp I3 hinge force_pinch F_H]
 
@@ -930,21 +928,23 @@ classdef AplysiaFeeding
 
             %check if seaweed is broken
             if (obj.fixation_type(j) ==1)
-                if (obj.force_on_object(j+1)>obj.seaweed_strength)
-                    unbroken = 0;
-                end
                 %check to see if a new cycle has started
                 x_gh_next = obj.x_g(j+1)-obj.x_h(j+1);
                 
                 if (~unbroken && x_gh <0.3 && x_gh_next>x_gh)%x_gh<0.3)
                    unbroken = 1; 
+                else
+                    if (obj.force_on_object(j+1)>obj.seaweed_strength)
+                        unbroken = 0;
+                    end
                 end
+                
                 obj.force_on_object(j+1)= unbroken*obj.force_on_object(j+1);
             end
-
-
              
-
+            fprintf('x next comp %d %d %d %d %d %d\n', x_new(1), x_next_exp(1,1), x_new(1) - x_next_exp(1,1), x_new(2), x_next_exp(1,2), x_new(2) - x_next_exp(1,2));
+            fprintf('unbroken comp %d %d %d\n', unbroken, unbroken_next_exp(1), unbroken - unbroken(1));
+            
             end
 
         end
