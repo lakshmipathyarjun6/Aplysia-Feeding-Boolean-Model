@@ -697,12 +697,12 @@ classdef AplysiaFeeding
 
 
 
-                sim('AplysiaFeedingSimulation');
-                
-                grasp_values = grasper_vars.signals.values;
-                body_values = body_vars.signals.values;
-                x_next_exp = x_next.signals.values;
-                unbroken_next_exp = unbroken_next.signals.values;
+%                 sim('AplysiaFeedingSimulation');
+%                 
+%                 grasp_values = grasper_vars.signals.values;
+%                 body_values = body_vars.signals.values;
+%                 x_next_exp = x_next.signals.values;
+%                 unbroken_next_exp = unbroken_next.signals.values;
                 
 %                 debugsig_vals = debugsig.signals.values;
 
@@ -801,9 +801,9 @@ classdef AplysiaFeeding
                     end
                 end
                 
-                fprintf('grasper F and B values %d %d %d %d %d %d\n', F_f_g, grasp_values(1,1), F_f_g - grasp_values(1,1), B2, grasp_values(1,5), B2 - grasp_values(1,5));
-                fprintf('grasper A values %d %d %d %d %d %d\n', A21, grasp_values(1,2), A21 - grasp_values(1,2), A22, grasp_values(1,3), A22 - grasp_values(1,3));
-%                  
+%                 fprintf('grasper F and B values %d %d %d %d %d %d\n', F_f_g, grasp_values(1,1), F_f_g - grasp_values(1,1), B2, grasp_values(1,5), B2 - grasp_values(1,5));
+%                 fprintf('grasper A values %d %d %d %d %d %d\n', A21, grasp_values(1,2), A21 - grasp_values(1,2), A22, grasp_values(1,3), A22 - grasp_values(1,3));
+%                   
                 %[j*dt position_grasper_relative I2 F_sp I3 hinge GrapserPressure_last F_g]
 
                 
@@ -902,9 +902,9 @@ classdef AplysiaFeeding
                     end
                 end
 
-                fprintf('body F and B values %d %d %d %d %d %d\n', F_f_h, body_values(1,5), F_f_h - body_values(1,5), B1, body_values(1,1), B1 - body_values(1,1));
-                fprintf('body A values %d %d %d %d %d %d\n', A11, body_values(1,4), A11 - body_values(1,4), A12, body_values(1,3), A12 - body_values(1,3));
-                                
+%                 fprintf('body F and B values %d %d %d %d %d %d\n', F_f_h, body_values(1,5), F_f_h - body_values(1,5), B1, body_values(1,1), B1 - body_values(1,1));
+%                 fprintf('body A values %d %d %d %d %d %d\n', A11, body_values(1,4), A11 - body_values(1,4), A12, body_values(1,3), A12 - body_values(1,3));
+%                                 
                 %[position_buccal_last F_h F_sp I3 hinge force_pinch F_H]
 
 
@@ -942,9 +942,9 @@ classdef AplysiaFeeding
                 obj.force_on_object(j+1)= unbroken*obj.force_on_object(j+1);
             end
              
-            fprintf('x next comp %d %d %d %d %d %d\n', x_new(1), x_next_exp(1,1), x_new(1) - x_next_exp(1,1), x_new(2), x_next_exp(1,2), x_new(2) - x_next_exp(1,2));
-            fprintf('unbroken comp %d %d %d\n', unbroken, unbroken_next_exp(1), unbroken - unbroken(1));
-            
+%             fprintf('x next comp %d %d %d %d %d %d\n', x_new(1), x_next_exp(1,1), x_new(1) - x_next_exp(1,1), x_new(2), x_next_exp(1,2), x_new(2) - x_next_exp(1,2));
+%             fprintf('unbroken comp %d %d %d\n', unbroken, unbroken_next_exp(1), unbroken - unbroken(1));
+%             
             end
 
         end
