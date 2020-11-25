@@ -6,7 +6,8 @@ suffix = '_8_9_2020';
 xlimits = [0 40];
 
 %% Initialize simulation object
-aplysia = AplysiaFeeding();
+% aplysia = AplysiaFeeding();
+aplysia = AplysiaFeedingNew();
 
 % %% Biting
 % disp('Biting')
@@ -22,7 +23,7 @@ aplysia = aplysia.setSensoryStates('swallow');
 tic
 aplysia = aplysia.runSimulation();
 toc
-aplysia.generatePlots(['Swallow_' suffix],xlimits);
+% aplysia.generatePlots(['Swallow_' suffix],xlimits);
 
 
 % %% Multifunctional swallowing of different strength seaweeds

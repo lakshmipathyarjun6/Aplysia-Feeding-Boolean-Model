@@ -1070,13 +1070,13 @@ classdef AplysiaFeeding
             %External Stimuli
             subplot('position',[left top width height])
             i=i+1;
-            plot(t,obj.sens_mechanical_grasper, 'Color', [56/255, 232/255, 123/255],'LineWidth',2) %mechanical in grasper
+            plot(t,obj.P_I4, 'Color', [56/255, 232/255, 123/255],'LineWidth',2) %mechanical in grasper
             set(gca,'FontSize',16)
 
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('Mech. in Grasper')
+            ylabel('P I4')
             ylim([0 1])
             grid on
             xlim(xl)
@@ -1087,12 +1087,12 @@ classdef AplysiaFeeding
 
             subplot('position',[left top-i*shift width height])
             i=i+1;
-            plot(t,obj.sens_chemical_lips, 'Color', [70/255, 84/255, 218/255],'LineWidth',2) %chemical at lips
+            plot(t,obj.A_I4, 'Color', [70/255, 84/255, 218/255],'LineWidth',2) %chemical at lips
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('Chem. at Lips')
+            ylabel('A I4')
             ylim([0 1])
             grid on
             xlim(xl)
@@ -1103,12 +1103,12 @@ classdef AplysiaFeeding
 
             subplot('position',[left top-i*shift width height])
             i=i+1;
-            plot(t,obj.sens_mechanical_lips, 'Color', [47/255, 195/255, 241/255],'LineWidth',2) %mechanical at lips
+            plot(t,obj.P_I3_anterior, 'Color', [47/255, 195/255, 241/255],'LineWidth',2) %mechanical at lips
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('Mech. at Lips')
+            ylabel('P_I3_anterior')
             ylim([0 1])
             grid on
             xlim(xl)
@@ -1118,13 +1118,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.CBI2,'k','LineWidth',2) % CBI2
+            plot(t,obj.A_I3_anterior,'k','LineWidth',2) % CBI2
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('CBI-2')
+            ylabel('A_I3_anterior_Out')
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1133,13 +1133,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.CBI3,'k','LineWidth',2) % CBI3
+            plot(t,obj.T_I3,'k','LineWidth',2) % CBI3
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('CBI-3')
+            ylabel('T_I3')
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1148,13 +1148,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.CBI4,'k','LineWidth',2) % CBI4
+            plot(t,obj.A_I3,'k','LineWidth',2) % CBI4
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('CBI-4')
+            ylabel('A_I3')
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1163,13 +1163,13 @@ classdef AplysiaFeeding
 
             %Interneurons
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.B64,'LineWidth',2, 'Color',[90/255, 131/255, 198/255]) % B64
+            plot(t,obj.T_I2,'LineWidth',2, 'Color',[90/255, 131/255, 198/255]) % B64
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('B64', 'Color',[90/255, 131/255, 198/255])
+            ylabel('T_I2', 'Color',[90/255, 131/255, 198/255])
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1178,13 +1178,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.B20,'LineWidth',2, 'Color',[44/255, 166/255, 90/255]) % B20
+            plot(t,obj.A_I2,'LineWidth',2, 'Color',[44/255, 166/255, 90/255]) % B20
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('B20', 'Color',[44/255, 166/255, 90/255])
+            ylabel('A_I2', 'Color',[44/255, 166/255, 90/255])
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1193,13 +1193,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.B40B30,'LineWidth',2, 'Color',[192/255, 92/255, 185/255]) % B40/B30
+            plot(t,obj.T_hinge,'LineWidth',2, 'Color',[192/255, 92/255, 185/255]) % B40/B30
             i=i+1.5;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('B40/B30', 'Color',[192/255, 92/255, 185/255])
+            ylabel('T_hinge', 'Color',[192/255, 92/255, 185/255])
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1208,13 +1208,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height*2])
-            plot(t,obj.B4B5,'LineWidth',2, 'Color', [51/255, 185/255, 135/255]) % B4/5
+            plot(t,obj.A_hinge,'LineWidth',2, 'Color', [51/255, 185/255, 135/255]) % B4/5
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1,2])
             set(gca,'YTickLabel',[]);
-            ylabel('B4/B5', 'Color', [51/255, 185/255, 135/255])
+            ylabel('A_hinge', 'Color', [51/255, 185/255, 135/255])
             ylim([ymin 2])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
