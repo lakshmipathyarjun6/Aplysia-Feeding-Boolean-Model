@@ -96,7 +96,9 @@ classdef AplysiaFeeding
         
         %body state variables
         x_h
+        x_h_simulink
         x_g
+        x_g_simulink
         grasper_friction_state      %0 = kinetic friction, 1 = static friction
         jaw_friction_state          %0 = kinetic friction, 1 = static friction
         
@@ -105,6 +107,7 @@ classdef AplysiaFeeding
         seaweed_strength = 10;
         fixation_type = 1;          %default initialization is seaweed fixed to the force transducer (use for swallowing)
         force_on_object
+        force_on_object_simulink
         
         %sensory state vectors
         sens_chemical_lips
@@ -175,12 +178,15 @@ classdef AplysiaFeeding
 
             %body state variables
             obj.x_h = zeros(1,nt);
+            obj.x_h_simulink = zeros(1,nt);
             obj.x_g = zeros(1,nt);
+            obj.x_g_simulink = zeros(1,nt);
             obj.grasper_friction_state = zeros(1,nt);
             obj.jaw_friction_state = zeros(1,nt);
 
             %environment variables
             obj.force_on_object = zeros(1,nt);
+            obj.force_on_object_simulink = zeros(1,nt);
             
             
             %Specify initial conditions
@@ -212,9 +218,12 @@ classdef AplysiaFeeding
             
             obj.x_h(1) = 0;
             obj.x_g(1) = 0.1;
+            obj.x_h_simulink(1) = 0;
+            obj.x_g_simulink(1) = 0.1;
             obj.grasper_friction_state(1) = 0;
             obj.jaw_friction_state(1) = 0;
             obj.force_on_object(1) = 0;
+            obj.force_on_object_simulink(1) = 0;
             
             %initialize electrodes to zero
             obj.stim_B4B5(1:nt) = zeros(1,nt);
@@ -692,19 +701,21 @@ classdef AplysiaFeeding
                 assignin('base','P_I3_anterior',obj.P_I3_anterior(j));
                 assignin('base','fixation_type',obj.fixation_type(j));
                 assignin('base','unbroken',unbroken);
+                assignin('base','ts',obj.TimeStep);
 
                 assignin('base','sens_mechanical_grasper',obj.sens_mechanical_grasper(j));
 
 
 
-%                 sim('AplysiaFeedingSimulation');
-%                 
-%                 grasp_values = grasper_vars.signals.values;
-%                 body_values = body_vars.signals.values;
-%                 x_next_exp = x_next.signals.values;
-%                 unbroken_next_exp = unbroken_next.signals.values;
+                sim('AplysiaFeedingSimulation');
                 
-%                 debugsig_vals = debugsig.signals.values;
+                grasp_values = grasper_vars.signals.values;
+                body_values = body_vars.signals.values;
+                x_next_exp = x_next.signals.values;
+                unbroken_next_exp = unbroken_next.signals.values;
+                force_on_object_exp = force_on_ojbect.signals.values;
+                
+%                 disp(force_on_ojbect.signals.values(1,1,1))
 
             %% Grasper Forces
             %all forces in form F = Ax+b
@@ -801,9 +812,9 @@ classdef AplysiaFeeding
                     end
                 end
                 
-%                 fprintf('grasper F and B values %d %d %d %d %d %d\n', F_f_g, grasp_values(1,1), F_f_g - grasp_values(1,1), B2, grasp_values(1,5), B2 - grasp_values(1,5));
-%                 fprintf('grasper A values %d %d %d %d %d %d\n', A21, grasp_values(1,2), A21 - grasp_values(1,2), A22, grasp_values(1,3), A22 - grasp_values(1,3));
-%                   
+                fprintf('grasper F and B values %d %d %d %d %d %d\n', F_f_g, grasp_values(1,1), F_f_g - grasp_values(1,1), B2, grasp_values(1,5), B2 - grasp_values(1,5));
+                fprintf('grasper A values %d %d %d %d %d %d\n', A21, grasp_values(1,2), A21 - grasp_values(1,2), A22, grasp_values(1,3), A22 - grasp_values(1,3));
+                  
                 %[j*dt position_grasper_relative I2 F_sp I3 hinge GrapserPressure_last F_g]
 
                 
@@ -902,9 +913,9 @@ classdef AplysiaFeeding
                     end
                 end
 
-%                 fprintf('body F and B values %d %d %d %d %d %d\n', F_f_h, body_values(1,5), F_f_h - body_values(1,5), B1, body_values(1,1), B1 - body_values(1,1));
-%                 fprintf('body A values %d %d %d %d %d %d\n', A11, body_values(1,4), A11 - body_values(1,4), A12, body_values(1,3), A12 - body_values(1,3));
-%                                 
+                fprintf('body F and B values %d %d %d %d %d %d\n', F_f_h, body_values(1,5), F_f_h - body_values(1,5), B1, body_values(1,1), B1 - body_values(1,1));
+                fprintf('body A values %d %d %d %d %d %d\n', A11, body_values(1,4), A11 - body_values(1,4), A12, body_values(1,3), A12 - body_values(1,3));
+                                
                 %[position_buccal_last F_h F_sp I3 hinge force_pinch F_H]
 
 
@@ -923,8 +934,12 @@ classdef AplysiaFeeding
             obj.x_g(j+1) = x_new(2); 
             obj.x_h(j+1) = x_new(1);
             
+            obj.x_g_simulink(j+1) = x_next_exp(1,2); 
+            obj.x_h_simulink(j+1) = x_next_exp(1,1);
+            
             %% calculate force on object
             obj.force_on_object(j+1) = F_f_g+F_f_h;
+            obj.force_on_object_simulink(j+1) = force_on_object_exp(1,1,1);
 
             %check if seaweed is broken
             if (obj.fixation_type(j) ==1)
@@ -942,9 +957,9 @@ classdef AplysiaFeeding
                 obj.force_on_object(j+1)= unbroken*obj.force_on_object(j+1);
             end
              
-%             fprintf('x next comp %d %d %d %d %d %d\n', x_new(1), x_next_exp(1,1), x_new(1) - x_next_exp(1,1), x_new(2), x_next_exp(1,2), x_new(2) - x_next_exp(1,2));
-%             fprintf('unbroken comp %d %d %d\n', unbroken, unbroken_next_exp(1), unbroken - unbroken(1));
-%             
+            fprintf('x next comp %d %d %d %d %d %d\n', x_new(1), x_next_exp(1,1), x_new(1) - x_next_exp(1,1), x_new(2), x_next_exp(1,2), x_new(2) - x_next_exp(1,2));
+            fprintf('unbroken comp %d %d %d\n', unbroken, unbroken_next_exp(1), unbroken - unbroken(1));
+            
             end
 
         end
@@ -1038,19 +1053,20 @@ classdef AplysiaFeeding
         function generatePlots(obj,label,xlimits)
             t=obj.StartingTime:obj.TimeStep:obj.EndTime;
 
-            figure('Position', [10 10 1200 600]);
+            figure('Position', [10 10 1200 1200]);
             set(gcf,'Color','white')
             xl=xlimits; % show full time scale
             ymin = 0;
             ymax = 1;
-            shift = 0.0475;%0.04;
+%             shift = 0.0475;%0.04;
+            shift = 0.04;
             top = 0.95;
             i=0;
             left = 0.25;
             width = 0.7;
             height = 0.02;
 
-            subplot(15,1,1)
+            subplot(18,1,1)
             %External Stimuli
             subplot('position',[left top width height])
             i=i+1;
@@ -1251,7 +1267,7 @@ classdef AplysiaFeeding
             set(hYLabel,'rotation',0,'VerticalAlignment','middle','HorizontalAlignment','right','Position',get(hYLabel,'Position')-[0.05 0 0])
             set(gca,'XColor','none')
 
-
+            % For some inexplicable reason Matlab is hiding this plot
             subplot('position',[left top-i*shift width height])
             plot(t,obj.B6B9B3,'LineWidth',2, 'Color', [90/255, 155/255, 197/255]) % B6/9/3
             i=i+1;
@@ -1263,6 +1279,38 @@ classdef AplysiaFeeding
             ylim([ymin ymax])
             xlim(xl)
             set(get(gca,'ylabel'),'rotation',0) 
+            hYLabel = get(gca,'YLabel');
+            set(hYLabel,'rotation',0,'VerticalAlignment','middle','HorizontalAlignment','right','Position',get(hYLabel,'Position')-[0.05 0 0])
+            set(gca,'XColor','none')
+            
+            % Simulink force output
+            subplot('position',[left top-i*shift width height*3.5])
+
+            plot(t,obj.force_on_object_simulink,'k','LineWidth',2)
+            i=i+2.5;
+            yticks([-1 0 1])
+            yticklabels({'','0',''})
+
+            set(gca,'FontSize',16)
+            set(gca,'xtick',[])
+            ylabel('Force (Simulink)', 'Color', [0/255, 0/255, 0/255])
+            xlim(xl)
+            set(gca,'XColor','none')
+            hYLabel = get(gca,'YLabel');
+            set(hYLabel,'rotation',0,'VerticalAlignment','middle','HorizontalAlignment','right','Position',get(hYLabel,'Position')-[0.05 0 0])
+            set(gca,'XColor','none')
+            
+            % Simulink grasper motion
+            subplot('position',[left top-i*shift width height*3.5])
+            grasper_motion_simulink = (obj.x_g_simulink-obj.x_h_simulink);
+            plot(t,grasper_motion_simulink,'b','LineWidth',2)
+            i=i+1;
+            set(gca,'FontSize',16)
+            set(gca,'xtick',[])
+            set(gca,'YTickLabel',[]);
+            ylabel({'Grasper';'Motion (Simulink)'}, 'Color', [0/255, 0/255, 255/255])
+            xlim(xl)
+            set(gca,'XColor','none')
             hYLabel = get(gca,'YLabel');
             set(hYLabel,'rotation',0,'VerticalAlignment','middle','HorizontalAlignment','right','Position',get(hYLabel,'Position')-[0.05 0 0])
             set(gca,'XColor','none')
@@ -1370,7 +1418,7 @@ classdef AplysiaFeeding
             hold off
 
 
-            %subplot(15,1,15)
+            %subplot(18,1,1)
             subplot('position',[left top-i*shift width height*3.5])
 
             plot(t,obj.force_on_object,'k','LineWidth',2)
