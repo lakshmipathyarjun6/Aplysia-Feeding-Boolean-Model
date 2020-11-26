@@ -121,6 +121,8 @@ classdef AplysiaFeeding
         stim_B4B5 %0 = off, 1 = on
         stim_CBI2 %0 = off, 1 = on
         
+        
+        xtmpbuf;
     end
     %%
     methods
@@ -188,6 +190,8 @@ classdef AplysiaFeeding
             obj.force_on_object = zeros(1,nt);
             obj.force_on_object_simulink = zeros(1,nt);
             
+            obj.xtmpbuf = zeros(1,nt);
+            obj.xtmpbuf(1) = 0;
             
             %Specify initial conditions
             obj.MCC(1) = 1;
@@ -258,19 +262,11 @@ classdef AplysiaFeeding
 
                 obj.MCC(j+1)=obj.MCC(j);
                 
-                
-                obj.B64(j+1) = obj.B64(j); % WRONG
-                obj.B4B5(j+1) = obj.B4B5(j); % WRONG
-                obj.B31B32(j+1) = obj.B31B32(j); % WRONG
+%                 obj.B64(j+1) = obj.B64(j);
+                obj.B4B5(j+1) = obj.B4B5(j);
+%                 obj.B31B32(j+1) = obj.B31B32(j); % WRONG
                 obj.B7(j+1) = obj.B7(j); % WRONG
                 obj.B38(j+1) = obj.B38(j); % WRONG
-                
-%                 obj.P_I3_anterior(j+1)=obj.P_I3_anterior(j); % WRONG
-%                 obj.A_I3_anterior(j+1)=obj.A_I3_anterior(j); % WRONG
-% 
-%                 % Update Hinge activation: dm/dt=(B7-m)/tau_m.  quasi-B-Eul.
-%                 obj.T_hinge(j+1)=obj.T_hinge(j); % WRONG
-%                 obj.A_hinge(j+1)=obj.A_hinge(j); % WRONG
 
                 %% Update CBI-2
                 %{
@@ -399,15 +395,14 @@ classdef AplysiaFeeding
                         NOT(Relative Grasper Position is less than B64 Rejection Retraction threshold)
                 %}
 
-%                 B64_proprioception = (obj.CBI3(j)*(... % checks protraction threshold - original 0.5
-%                                                 (  obj.sens_mechanical_grasper(j) *(x_gh>obj.thresh_B64_swallow_protract))||...
-%                                                 ((~obj.sens_mechanical_grasper(j))*(x_gh>obj.thresh_B64_bite_protract))))...
-%                                             ||...
-%                                                 ((~obj.CBI3(j))                   *(x_gh>obj.thresh_B64_reject_protract));
-% 
-%                 B64
-%                 obj.B64(j+1)=obj.MCC(j)*(~obj.B31B32(j))*... % update B64
-%                     B64_proprioception;
+                B64_proprioception = (obj.CBI3(j)*(... % checks protraction threshold - original 0.5
+                                                (  obj.sens_mechanical_grasper(j) *(x_gh>obj.thresh_B64_swallow_protract))||...
+                                                ((~obj.sens_mechanical_grasper(j))*(x_gh>obj.thresh_B64_bite_protract))))...
+                                            ||...
+                                                ((~obj.CBI3(j))                   *(x_gh>obj.thresh_B64_reject_protract));
+
+                obj.B64(j+1)=obj.MCC(j)*(~obj.B31B32(j))*... % update B64
+                    B64_proprioception;
 
                 %% Update B4/B5: 
                 %{
@@ -525,15 +520,15 @@ classdef AplysiaFeeding
                     off_thresh = obj.thresh_B31_bite_off;        
                 end
 
-%                 obj.B31B32(j+1)=obj.MCC(j)*(...
-%                     obj.CBI3(j)*... %if ingestion
-%                         ((~obj.B64(j))*((obj.P_I4(j)<(1/2))||obj.CBI2(j))*... 
-%                             ((~obj.B31B32(j))*(x_gh<off_thresh)+...
-%                                obj.B31B32(j) *(x_gh<on_thresh)))+...
-%                   (~obj.CBI3(j))*... %if egestion
-%                         ((~obj.B64(j))*(obj.P_I4(j)>(1/4))*(obj.CBI2(j)||obj.CBI4(j))*...
-%                             ((~obj.B31B32(j))*(x_gh<off_thresh)+...
-%                                obj.B31B32(j) *(x_gh<on_thresh))));
+                obj.B31B32(j+1)=obj.MCC(j)*(...
+                    obj.CBI3(j)*... %if ingestion
+                        ((~obj.B64(j))*((obj.P_I4(j)<(1/2))||obj.CBI2(j))*... 
+                            ((~obj.B31B32(j))*(x_gh<off_thresh)+...
+                               obj.B31B32(j) *(x_gh<on_thresh)))+...
+                  (~obj.CBI3(j))*... %if egestion
+                        ((~obj.B64(j))*(obj.P_I4(j)>(1/4))*(obj.CBI2(j)||obj.CBI4(j))*...
+                            ((~obj.B31B32(j))*(x_gh<off_thresh)+...
+                               obj.B31B32(j) *(x_gh<on_thresh))));
 
                 %% Update B6/B9/B3: 
                 % activate once pressure is high enough in ingestion, or low enough in
@@ -761,7 +756,7 @@ classdef AplysiaFeeding
                 B2 = 1/obj.c_g*(B2_I2 + B2_sp_g + B2_I3 + B2_hinge);
                 
                 if(obj.fixation_type(j) == 0) %object is not fixed to a contrained surface
-                    %F_g = F_I2+F_sp_g-F_I3-F_hinge; %if the object is unconstrained it does not apply a resistive force back on the grasper. Therefore the force is just due to the muscles
+                    F_g = F_I2+F_sp_g-F_I3-F_hinge; %if the object is unconstrained it does not apply a resistive force back on the grasper. Therefore the force is just due to the muscles
 
                     A21 = A2(1);
                     A22 = A2(2);
@@ -784,7 +779,7 @@ classdef AplysiaFeeding
                         if(abs(F_comb) <= abs(F_sf_range)) % static friction is true
                             disp('static constrained unbroken')
                             F_f_g = -obj.sens_mechanical_grasper(j)*(F_comb);
-                            %F_g = F_I2+F_sp_g-F_I3-F_hinge + F_f_g;
+                            F_g = F_I2+F_sp_g-F_I3-F_hinge + F_f_g;
                             obj.grasper_friction_state(j+1) = 1;
 
                             %identify matrix components for semi-implicit integration
@@ -796,7 +791,7 @@ classdef AplysiaFeeding
                             disp('kinetic constrained unbroken')
                             F_f_g = -sign(F_comb)*obj.sens_mechanical_grasper(j)*F_kf_range;
                             %specify sign of friction force
-                            %F_g = F_I2+F_sp_g-F_I3-F_hinge + F_f_g;
+                            F_g = F_I2+F_sp_g-F_I3-F_hinge + F_f_g;
                             obj.grasper_friction_state(j+1) = 0;
 
 
@@ -808,7 +803,7 @@ classdef AplysiaFeeding
                             
                         end
                     else
-                        %F_g = F_I2+F_sp_g-F_I3-F_hinge; %if the object is unconstrained it does not apply a resistive force back on the grasper. Therefore the force is just due to the muscles
+                        F_g = F_I2+F_sp_g-F_I3-F_hinge; %if the object is unconstrained it does not apply a resistive force back on the grasper. Therefore the force is just due to the muscles
                         
                         A21 = A2(1);
                         A22 = A2(2);
@@ -855,7 +850,7 @@ classdef AplysiaFeeding
                 
                 %all muscle forces are equal and opposite
                 if(obj.fixation_type(j) == 0)     %object is not constrained
-                    %F_h = F_sp_h; %If the object is unconstrained it does not apply a force back on the head. Therefore the force is just due to the head spring.
+                    F_h = F_sp_h; %If the object is unconstrained it does not apply a force back on the head. Therefore the force is just due to the head spring.
 
                     A11 = A1(1);
                     A12 = A1(2);
@@ -875,7 +870,7 @@ classdef AplysiaFeeding
                         if(abs(F_comb_h) <= abs(F_sf_h_range)) % static friction is true
                             disp('static2 constrained unbroken')
                             F_f_h = -obj.sens_mechanical_grasper(j)*(F_comb_h); %only calculate the force if an object is actually present
-                            %F_h = F_sp_h+F_f_g + F_f_h;
+                            F_h = F_sp_h-F_f_g + F_f_h;
                             obj.jaw_friction_state(j+1) = 1;
 
                             A11 = 0;
@@ -885,7 +880,7 @@ classdef AplysiaFeeding
                         else
                             disp('kinetic2 constrained unbroken')
                             F_f_h = -sign(F_comb_h)*obj.sens_mechanical_grasper(j)*F_kf_h_range; %only calculate the force if an object is actually present
-                            %F_h = F_sp_h+F_f_g + F_f_h;
+                            F_h = F_sp_h-F_f_g + F_f_h;
 
                             obj.jaw_friction_state(j+1) = 0;
                             
@@ -912,6 +907,8 @@ classdef AplysiaFeeding
                             A12 = A1(2);
                         end
                     else % if the seaweed is broken the jaws act as if unconstrained
+                        F_h = F_sp_h;
+                        
                         if(abs(F_comb_h) <= abs(F_sf_h_range)) % static friction is true
                             disp('static2 constrained broken')
                             F_f_h = -obj.sens_mechanical_grasper(j)*(F_comb_h); %only calculate the force if an object is actually present
@@ -950,6 +947,8 @@ classdef AplysiaFeeding
             obj.x_g(j+1) = x_new(2); 
             obj.x_h(j+1) = x_new(1);
             
+            obj.xtmpbuf(j+1) = x_new(2);
+            
 %             obj.x_g_simulink(j+1) = x_next_exp(1,2); 
 %             obj.x_h_simulink(j+1) = x_next_exp(1,1);
             
@@ -979,7 +978,7 @@ classdef AplysiaFeeding
             end
             
             t=obj.StartingTime:obj.TimeStep:obj.EndTime;
-            plot(t,obj.A_hinge, 'Color', [56/255, 232/255, 123/255],'LineWidth',2)
+            plot(t,obj.B40B30, 'Color', [56/255, 232/255, 123/255],'LineWidth',2)
 
         end
         %%

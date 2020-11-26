@@ -1,5 +1,12 @@
 classdef AplysiaFeedingNew
     properties
+        %Maximum muscle forces
+        max_I4 = 1.75;              %Maximum pressure grasper can exert on food
+        max_I3ant = 0.6;            %Maximum I3 anterior force
+        max_I3 = 1;                 %Maximum I3 force
+        max_I2 = 1.5;               %Maximum I2 force
+        max_hinge = 0.2;            %Maximum hinge force
+        
         %Muscle time constants
         tau_I4 = 1.0/sqrt(2);              %time constant (in seconds) for I4 activation
         tau_I3anterior = 2.0/sqrt(2);      %time constant (in seconds) for I3anterior activation
@@ -8,7 +15,34 @@ classdef AplysiaFeedingNew
         tau_I2_egestion = 1.4*1/sqrt(2);   %time constant (in seconds) for I2 activation during egestion
         tau_hinge  = 1.0/sqrt(2);          %time constant (in seconds) for hinge activation
         
+        %body time constants
+        c_g = 1.0;                  %time constant (in seconds) for grapser motion
+        c_h = 1.0;                  %time constant (in seconds) for body motion
+        
+        %Spring constants
+        K_sp_h = 2.0;       %spring constant representing neck and body between head and ground
+        K_sp_g = 0.1;       %spring constant representing attachment between buccal mass and head
+        
+        %Reference points for springs
+        x_h_ref = 0.0;      %head spring reference position
+        x_gh_ref = 0.4;     %grasper spring reference position
+        
+        x_h_Init = 0;
+        x_g_Init = 0.1;
+        
+        %Friction coefficients
+        mu_s_g = 0.4;               %mu_s coefficient of static friction at grasper
+        mu_k_g = 0.3;               %mu_k coefficient of kinetic friction at grasper
+        mu_s_h = 0.3;               %mu_s coefficient of static friction at jaws
+        mu_k_h = 0.3;               %mu_k coefficient of kinetic friction at jaws
+        
         %Sensory feedback thresholds (theshold_neuron name_behavior_type)
+        thresh_B64_bite_protract = 0.89;
+        thresh_B64_swallow_protract = 0.4;
+        thresh_B64_reject_protract = 0.5;
+        
+        thresh_B4B5_protract = 0.7;
+        
         thresh_B31_bite_on = 0.9;
         thresh_B31_bite_off = 0.55;
         thresh_B31_swallow_on = 0.75;
@@ -66,8 +100,12 @@ classdef AplysiaFeedingNew
         fixation_type_initial = 10000;
         fixation_type_final = 10000;
         
+        %environment variables
+        seaweed_strength = 10;
+        
         %switches
         use_hypothesized_connections = 0; %1 = yes, 0 = no
+        unbroken_Init = 1;
         
         %stimulation electrodes
         stim_B4B5_trigger_time_start = 10000;
@@ -81,6 +119,14 @@ classdef AplysiaFeedingNew
         %%
         function obj = AplysiaFeedingNew()
             assignin('base','use_hypothesized_connections',obj.use_hypothesized_connections);
+            assignin('base','unbroken_Init',obj.unbroken_Init);
+            assignin('base','seaweed_strength',obj.seaweed_strength);
+            
+            assignin('base','max_I4',obj.max_I4);
+            assignin('base','max_I3ant',obj.max_I3ant);
+            assignin('base','max_I3',obj.max_I3);
+            assignin('base','max_I2',obj.max_I2);
+            assignin('base','max_hinge',obj.max_hinge);
             
             assignin('base','tau_I4',obj.tau_I4);
             assignin('base','tau_I3anterior',obj.tau_I3anterior);
@@ -88,6 +134,29 @@ classdef AplysiaFeedingNew
             assignin('base','tau_I2_ingestion',obj.tau_I2_ingestion);
             assignin('base','tau_I2_egestion',obj.tau_I2_egestion);
             assignin('base','tau_hinge',obj.tau_hinge);
+            
+            assignin('base','c_g',obj.c_g);
+            assignin('base','c_h',obj.c_h);
+            
+            assignin('base','K_sp_h',obj.K_sp_h);
+            assignin('base','K_sp_g',obj.K_sp_g);
+            
+            assignin('base','x_h_ref',obj.x_h_ref);
+            assignin('base','x_gh_ref',obj.x_gh_ref);
+            
+            assignin('base','x_h_Init',obj.x_h_Init);
+            assignin('base','x_g_Init',obj.x_g_Init);
+            
+            assignin('base','mu_s_g',obj.mu_s_g);
+            assignin('base','mu_k_g',obj.mu_k_g);
+            assignin('base','mu_s_h',obj.mu_s_h);
+            assignin('base','mu_k_h',obj.mu_k_h);
+            
+            assignin('base','thresh_B64_bite_protract',obj.thresh_B64_bite_protract);
+            assignin('base','thresh_B64_swallow_protract',obj.thresh_B64_swallow_protract);
+            assignin('base','thresh_B64_reject_protract',obj.thresh_B64_reject_protract);
+            
+            assignin('base','thresh_B4B5_protract',obj.thresh_B4B5_protract);
             
             assignin('base','thresh_B31_bite_on',obj.thresh_B31_bite_on);
             assignin('base','thresh_B31_bite_off',obj.thresh_B31_bite_off);
