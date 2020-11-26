@@ -2,8 +2,8 @@ classdef AplysiaFeeding
     %%
     properties        
         %Timing variables
-%         TimeStep = 0.05;            %time step in seconds
-        TimeStep = 0.5;            %time step in seconds
+        TimeStep = 0.05;            %time step in seconds
+%         TimeStep = 0.5;            %time step in seconds
         StartingTime = 0;           %simulation start time (in seconds)
         EndTime = 40;               %simulation end time (in seconds)
         
@@ -257,6 +257,20 @@ classdef AplysiaFeeding
                 %}
 
                 obj.MCC(j+1)=obj.MCC(j);
+                
+                
+                obj.B64(j+1) = obj.B64(j); % WRONG
+                obj.B4B5(j+1) = obj.B4B5(j); % WRONG
+                obj.B31B32(j+1) = obj.B31B32(j); % WRONG
+                obj.B7(j+1) = obj.B7(j); % WRONG
+                obj.B38(j+1) = obj.B38(j); % WRONG
+                
+%                 obj.P_I3_anterior(j+1)=obj.P_I3_anterior(j); % WRONG
+%                 obj.A_I3_anterior(j+1)=obj.A_I3_anterior(j); % WRONG
+% 
+%                 % Update Hinge activation: dm/dt=(B7-m)/tau_m.  quasi-B-Eul.
+%                 obj.T_hinge(j+1)=obj.T_hinge(j); % WRONG
+%                 obj.A_hinge(j+1)=obj.A_hinge(j); % WRONG
 
                 %% Update CBI-2
                 %{
@@ -301,33 +315,35 @@ classdef AplysiaFeeding
                 %CBI3 can experieince a refractory period following strong inhibition from B4/B5
                 %check if a refractory period is occuring
 
-            %modified to only turn on refreactory after the strong stimulation
-                if((obj.B4B5(j)>=2) && (CBI3_stimON==0))
-                   CBI3_stimON = j;   
-                   %CBI3_refractory = 1;
-                end
-                if ((CBI3_stimON ~=0) && (obj.B4B5(j)<2))
-                   CBI3_refractory = 1;
-                   CBI3_stimOFF = j;  
-                   CBI3_stimON = 0;    
-                end 
-
-                if(CBI3_refractory && j<(CBI3_stimOFF+obj.refractory_CBI3/1000/obj.TimeStep))
-                   CBI3_refractory = 1; 
-                else
-                    CBI3_stimOFF = 0;
-                    CBI3_refractory = 0; 
-                end
-
-
-                %CBI3 - updated 6/7/2020    
-                %with hypothesized connections from B4/B5    
-                if (obj.use_hypothesized_connections ==1)
-                    obj.CBI3(j+1) = obj.MCC(j)*(obj.sens_mechanical_lips(j)*obj.sens_chemical_lips(j))*((obj.B4B5(j)<2))*(~CBI3_refractory);   
-                else
-                %without hypothesized connections from B4/B5  
-                    obj.CBI3(j+1) = obj.MCC(j)*(obj.sens_mechanical_lips(j)*obj.sens_chemical_lips(j)); 
-                end
+%             %modified to only turn on refreactory after the strong stimulation
+%                 if((obj.B4B5(j)>=2) && (CBI3_stimON==0))
+%                    CBI3_stimON = j;   
+%                    %CBI3_refractory = 1;
+%                 end
+%                 if ((CBI3_stimON ~=0) && (obj.B4B5(j)<2))
+%                    CBI3_refractory = 1;
+%                    CBI3_stimOFF = j;  
+%                    CBI3_stimON = 0;    
+%                 end 
+% 
+%                 if(CBI3_refractory && j<(CBI3_stimOFF+obj.refractory_CBI3/1000/obj.TimeStep))
+%                    CBI3_refractory = 1; 
+%                 else
+%                     CBI3_stimOFF = 0;
+%                     CBI3_refractory = 0; 
+%                 end
+% 
+% 
+%                 %CBI3 - updated 6/7/2020    
+%                 %with hypothesized connections from B4/B5    
+%                 if (obj.use_hypothesized_connections ==1)
+%                     obj.CBI3(j+1) = obj.MCC(j)*(obj.sens_mechanical_lips(j)*obj.sens_chemical_lips(j))*((obj.B4B5(j)<2))*(~CBI3_refractory);   
+%                 else
+%                 %without hypothesized connections from B4/B5  
+%                     obj.CBI3(j+1) = obj.MCC(j)*(obj.sens_mechanical_lips(j)*obj.sens_chemical_lips(j)); 
+%                 end
+                
+                obj.CBI3(j+1) = obj.MCC(j)*(obj.sens_mechanical_lips(j)*obj.sens_chemical_lips(j)); 
 
 
 
@@ -383,15 +399,15 @@ classdef AplysiaFeeding
                         NOT(Relative Grasper Position is less than B64 Rejection Retraction threshold)
                 %}
 
-                B64_proprioception = (obj.CBI3(j)*(... % checks protraction threshold - original 0.5
-                                                (  obj.sens_mechanical_grasper(j) *(x_gh>obj.thresh_B64_swallow_protract))||...
-                                                ((~obj.sens_mechanical_grasper(j))*(x_gh>obj.thresh_B64_bite_protract))))...
-                                            ||...
-                                                ((~obj.CBI3(j))                   *(x_gh>obj.thresh_B64_reject_protract));
-
-                %B64
-                obj.B64(j+1)=obj.MCC(j)*(~obj.B31B32(j))*... % update B64
-                    B64_proprioception;
+%                 B64_proprioception = (obj.CBI3(j)*(... % checks protraction threshold - original 0.5
+%                                                 (  obj.sens_mechanical_grasper(j) *(x_gh>obj.thresh_B64_swallow_protract))||...
+%                                                 ((~obj.sens_mechanical_grasper(j))*(x_gh>obj.thresh_B64_bite_protract))))...
+%                                             ||...
+%                                                 ((~obj.CBI3(j))                   *(x_gh>obj.thresh_B64_reject_protract));
+% 
+%                 B64
+%                 obj.B64(j+1)=obj.MCC(j)*(~obj.B31B32(j))*... % update B64
+%                     B64_proprioception;
 
                 %% Update B4/B5: 
                 %{
@@ -414,12 +430,12 @@ classdef AplysiaFeeding
                 %}
 
                 %B4B5
-                obj.B4B5(j+1)=obj.MCC(j)*...
-                            ((~obj.stim_B4B5(j))*... % when B4/B5 electrode is off
-                                (2*(~obj.CBI3(j))*...% if egestion
-                                    obj.B64(j)*(x_gh>obj.thresh_B4B5_protract)) +... 
-                                ((obj.CBI3(j))*(obj.sens_mechanical_grasper(j))*obj.B64(j)))... % if swallowing
-                    +2*obj.stim_B4B5(j); % when B4/B5 electrode is on (and +1) then turn B4/B5 on to "emergency" mode
+%                 obj.B4B5(j+1)=obj.MCC(j)*...
+%                             ((~obj.stim_B4B5(j))*... % when B4/B5 electrode is off
+%                                 (2*(~obj.CBI3(j))*...% if egestion
+%                                     obj.B64(j)*(x_gh>obj.thresh_B4B5_protract)) +... 
+%                                 ((obj.CBI3(j))*(obj.sens_mechanical_grasper(j))*obj.B64(j)))... % if swallowing
+%                     +2*obj.stim_B4B5(j); % when B4/B5 electrode is on (and +1) then turn B4/B5 on to "emergency" mode
 
                 %% Update B20 - updated 2/27/2020
                 % Not active if CB1-3 is on (strongly inhibited)
@@ -509,15 +525,15 @@ classdef AplysiaFeeding
                     off_thresh = obj.thresh_B31_bite_off;        
                 end
 
-                obj.B31B32(j+1)=obj.MCC(j)*(...
-                    obj.CBI3(j)*... %if ingestion
-                        ((~obj.B64(j))*((obj.P_I4(j)<(1/2))||obj.CBI2(j))*... 
-                            ((~obj.B31B32(j))*(x_gh<off_thresh)+...
-                               obj.B31B32(j) *(x_gh<on_thresh)))+...
-                  (~obj.CBI3(j))*... %if egestion
-                        ((~obj.B64(j))*(obj.P_I4(j)>(1/4))*(obj.CBI2(j)||obj.CBI4(j))*...
-                            ((~obj.B31B32(j))*(x_gh<off_thresh)+...
-                               obj.B31B32(j) *(x_gh<on_thresh))));
+%                 obj.B31B32(j+1)=obj.MCC(j)*(...
+%                     obj.CBI3(j)*... %if ingestion
+%                         ((~obj.B64(j))*((obj.P_I4(j)<(1/2))||obj.CBI2(j))*... 
+%                             ((~obj.B31B32(j))*(x_gh<off_thresh)+...
+%                                obj.B31B32(j) *(x_gh<on_thresh)))+...
+%                   (~obj.CBI3(j))*... %if egestion
+%                         ((~obj.B64(j))*(obj.P_I4(j)>(1/4))*(obj.CBI2(j)||obj.CBI4(j))*...
+%                             ((~obj.B31B32(j))*(x_gh<off_thresh)+...
+%                                obj.B31B32(j) *(x_gh<on_thresh))));
 
                 %% Update B6/B9/B3: 
                 % activate once pressure is high enough in ingestion, or low enough in
@@ -640,10 +656,10 @@ classdef AplysiaFeeding
                         OR
                         Grasper pressure is very high) (closed))
                 %}
-                obj.B7(j+1) = obj.MCC(j)*( ...
-                                  (((~obj.CBI3(j)) ||  (obj.sens_mechanical_grasper(j)))*((x_gh>=obj.thresh_B7_reject_protract)||(obj.P_I4(j)>(.97)))) + ...
-                                  (  (obj.CBI3(j)  && (~obj.sens_mechanical_grasper(j)))*((x_gh>=obj.thresh_B7_bite_protract)  ||(obj.P_I4(j)>(.97)))) ...
-                                  );
+%                 obj.B7(j+1) = obj.MCC(j)*( ...
+%                                   (((~obj.CBI3(j)) ||  (obj.sens_mechanical_grasper(j)))*((x_gh>=obj.thresh_B7_reject_protract)||(obj.P_I4(j)>(.97)))) + ...
+%                                   (  (obj.CBI3(j)  && (~obj.sens_mechanical_grasper(j)))*((x_gh>=obj.thresh_B7_bite_protract)  ||(obj.P_I4(j)>(.97)))) ...
+%                                   );
 
                 %% Update B38: 
                 % If already active, remain active until protracted past
@@ -662,9 +678,9 @@ classdef AplysiaFeeding
 
                 %B38
 
-                obj.B38(j+1)=obj.MCC(j)*(obj.sens_mechanical_grasper(j))*(...
-                    (obj.CBI3(j))*(... % if CBI3 active do the following:
-                        ((x_gh)<obj.thresh_B38_retract)));
+%                 obj.B38(j+1)=obj.MCC(j)*(obj.sens_mechanical_grasper(j))*(...
+%                     (obj.CBI3(j))*(... % if CBI3 active do the following:
+%                         ((x_gh)<obj.thresh_B38_retract)));
 
                 %% Update I4: If food present, and grasper closed, then approaches
                 % pmax pressure as dp/dt=(B8*pmax-p)/tau_p.  Use a quasi-backward-Euler
@@ -692,28 +708,28 @@ classdef AplysiaFeeding
             %% Biomechanics
             
             % Simulink initialization
-                assignin('base','x_h',obj.x_h(j));
-                assignin('base','x_g',obj.x_g(j));
-                assignin('base','T_I2',obj.T_I2(j));
-                assignin('base','T_I3',obj.T_I3(j));
-                assignin('base','T_hinge',obj.T_hinge(j));
-                assignin('base','P_I4',obj.P_I4(j));
-                assignin('base','P_I3_anterior',obj.P_I3_anterior(j));
-                assignin('base','fixation_type',obj.fixation_type(j));
-                assignin('base','unbroken',unbroken);
-                assignin('base','ts',obj.TimeStep);
-
-                assignin('base','sens_mechanical_grasper',obj.sens_mechanical_grasper(j));
-
-
-
-                sim('AplysiaFeedingSimulation');
+%                 assignin('base','x_h',obj.x_h(j));
+%                 assignin('base','x_g',obj.x_g(j));
+%                 assignin('base','T_I2',obj.T_I2(j));
+%                 assignin('base','T_I3',obj.T_I3(j));
+%                 assignin('base','T_hinge',obj.T_hinge(j));
+%                 assignin('base','P_I4',obj.P_I4(j));
+%                 assignin('base','P_I3_anterior',obj.P_I3_anterior(j));
+%                 assignin('base','fixation_type',obj.fixation_type(j));
+%                 assignin('base','unbroken',unbroken);
+%                 assignin('base','ts',obj.TimeStep);
+% 
+%                 assignin('base','sens_mechanical_grasper',obj.sens_mechanical_grasper(j));
+% 
+% 
+% 
+%                 sim('AplysiaFeedingSimulation');
                 
-                grasp_values = grasper_vars.signals.values;
-                body_values = body_vars.signals.values;
-                x_next_exp = x_next.signals.values;
-                unbroken_next_exp = unbroken_next.signals.values;
-                force_on_object_exp = force_on_ojbect.signals.values;
+%                 grasp_values = grasper_vars.signals.values;
+%                 body_values = body_vars.signals.values;
+%                 x_next_exp = x_next.signals.values;
+%                 unbroken_next_exp = unbroken_next.signals.values;
+%                 force_on_object_exp = force_on_ojbect.signals.values;
                 
 %                 disp(force_on_ojbect.signals.values(1,1,1))
 
@@ -812,9 +828,9 @@ classdef AplysiaFeeding
                     end
                 end
                 
-                fprintf('grasper F and B values %d %d %d %d %d %d\n', F_f_g, grasp_values(1,1), F_f_g - grasp_values(1,1), B2, grasp_values(1,5), B2 - grasp_values(1,5));
-                fprintf('grasper A values %d %d %d %d %d %d\n', A21, grasp_values(1,2), A21 - grasp_values(1,2), A22, grasp_values(1,3), A22 - grasp_values(1,3));
-                  
+%                 fprintf('grasper F and B values %d %d %d %d %d %d\n', F_f_g, grasp_values(1,1), F_f_g - grasp_values(1,1), B2, grasp_values(1,5), B2 - grasp_values(1,5));
+%                 fprintf('grasper A values %d %d %d %d %d %d\n', A21, grasp_values(1,2), A21 - grasp_values(1,2), A22, grasp_values(1,3), A22 - grasp_values(1,3));
+%                   
                 %[j*dt position_grasper_relative I2 F_sp I3 hinge GrapserPressure_last F_g]
 
                 
@@ -913,9 +929,9 @@ classdef AplysiaFeeding
                     end
                 end
 
-                fprintf('body F and B values %d %d %d %d %d %d\n', F_f_h, body_values(1,5), F_f_h - body_values(1,5), B1, body_values(1,1), B1 - body_values(1,1));
-                fprintf('body A values %d %d %d %d %d %d\n', A11, body_values(1,4), A11 - body_values(1,4), A12, body_values(1,3), A12 - body_values(1,3));
-                                
+%                 fprintf('body F and B values %d %d %d %d %d %d\n', F_f_h, body_values(1,5), F_f_h - body_values(1,5), B1, body_values(1,1), B1 - body_values(1,1));
+%                 fprintf('body A values %d %d %d %d %d %d\n', A11, body_values(1,4), A11 - body_values(1,4), A12, body_values(1,3), A12 - body_values(1,3));
+%                                 
                 %[position_buccal_last F_h F_sp I3 hinge force_pinch F_H]
 
 
@@ -934,12 +950,12 @@ classdef AplysiaFeeding
             obj.x_g(j+1) = x_new(2); 
             obj.x_h(j+1) = x_new(1);
             
-            obj.x_g_simulink(j+1) = x_next_exp(1,2); 
-            obj.x_h_simulink(j+1) = x_next_exp(1,1);
+%             obj.x_g_simulink(j+1) = x_next_exp(1,2); 
+%             obj.x_h_simulink(j+1) = x_next_exp(1,1);
             
             %% calculate force on object
             obj.force_on_object(j+1) = F_f_g+F_f_h;
-            obj.force_on_object_simulink(j+1) = force_on_object_exp(1,1,1);
+%             obj.force_on_object_simulink(j+1) = force_on_object_exp(1,1,1);
 
             %check if seaweed is broken
             if (obj.fixation_type(j) ==1)
@@ -957,10 +973,13 @@ classdef AplysiaFeeding
                 obj.force_on_object(j+1)= unbroken*obj.force_on_object(j+1);
             end
              
-            fprintf('x next comp %d %d %d %d %d %d\n', x_new(1), x_next_exp(1,1), x_new(1) - x_next_exp(1,1), x_new(2), x_next_exp(1,2), x_new(2) - x_next_exp(1,2));
-            fprintf('unbroken comp %d %d %d\n', unbroken, unbroken_next_exp(1), unbroken - unbroken(1));
-            
+%             fprintf('x next comp %d %d %d %d %d %d\n', x_new(1), x_next_exp(1,1), x_new(1) - x_next_exp(1,1), x_new(2), x_next_exp(1,2), x_new(2) - x_next_exp(1,2));
+%             fprintf('unbroken comp %d %d %d\n', unbroken, unbroken_next_exp(1), unbroken - unbroken(1));
+%             
             end
+            
+            t=obj.StartingTime:obj.TimeStep:obj.EndTime;
+            plot(t,obj.A_hinge, 'Color', [56/255, 232/255, 123/255],'LineWidth',2)
 
         end
         %%
@@ -1051,32 +1070,31 @@ classdef AplysiaFeeding
         end
         %%
         function generatePlots(obj,label,xlimits)
-            t=obj.StartingTime:obj.TimeStep:obj.EndTime;
+           t=obj.StartingTime:obj.TimeStep:obj.EndTime;
 
-            figure('Position', [10 10 1200 1200]);
+            figure('Position', [10 10 1200 600]);
             set(gcf,'Color','white')
             xl=xlimits; % show full time scale
             ymin = 0;
             ymax = 1;
-%             shift = 0.0475;%0.04;
-            shift = 0.04;
+            shift = 0.0475;%0.04;
             top = 0.95;
             i=0;
             left = 0.25;
             width = 0.7;
             height = 0.02;
 
-            subplot(18,1,1)
+            subplot(15,1,1)
             %External Stimuli
             subplot('position',[left top width height])
             i=i+1;
-            plot(t,obj.P_I4, 'Color', [56/255, 232/255, 123/255],'LineWidth',2) %mechanical in grasper
+            plot(t,obj.sens_mechanical_grasper, 'Color', [56/255, 232/255, 123/255],'LineWidth',2) %mechanical in grasper
             set(gca,'FontSize',16)
 
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('P I4')
+            ylabel('Mech. in Grasper')
             ylim([0 1])
             grid on
             xlim(xl)
@@ -1087,12 +1105,12 @@ classdef AplysiaFeeding
 
             subplot('position',[left top-i*shift width height])
             i=i+1;
-            plot(t,obj.A_I4, 'Color', [70/255, 84/255, 218/255],'LineWidth',2) %chemical at lips
+            plot(t,obj.sens_chemical_lips, 'Color', [70/255, 84/255, 218/255],'LineWidth',2) %chemical at lips
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('A I4')
+            ylabel('Chem. at Lips')
             ylim([0 1])
             grid on
             xlim(xl)
@@ -1103,12 +1121,12 @@ classdef AplysiaFeeding
 
             subplot('position',[left top-i*shift width height])
             i=i+1;
-            plot(t,obj.P_I3_anterior, 'Color', [47/255, 195/255, 241/255],'LineWidth',2) %mechanical at lips
+            plot(t,obj.sens_mechanical_lips, 'Color', [47/255, 195/255, 241/255],'LineWidth',2) %mechanical at lips
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('P_I3_anterior')
+            ylabel('Mech. at Lips')
             ylim([0 1])
             grid on
             xlim(xl)
@@ -1118,13 +1136,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.A_I3_anterior,'k','LineWidth',2) % CBI2
+            plot(t,obj.CBI2,'k','LineWidth',2) % CBI2
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('A_I3_anterior_Out')
+            ylabel('CBI-2')
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1133,13 +1151,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.T_I3,'k','LineWidth',2) % CBI3
+            plot(t,obj.CBI3,'k','LineWidth',2) % CBI3
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('T_I3')
+            ylabel('CBI-3')
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1148,13 +1166,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.A_I3,'k','LineWidth',2) % CBI4
+            plot(t,obj.CBI4,'k','LineWidth',2) % CBI4
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('A_I3')
+            ylabel('CBI-4')
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1163,13 +1181,13 @@ classdef AplysiaFeeding
 
             %Interneurons
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.T_I2,'LineWidth',2, 'Color',[90/255, 131/255, 198/255]) % B64
+            plot(t,obj.B64,'LineWidth',2, 'Color',[90/255, 131/255, 198/255]) % B64
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('T_I2', 'Color',[90/255, 131/255, 198/255])
+            ylabel('B64', 'Color',[90/255, 131/255, 198/255])
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1178,13 +1196,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.A_I2,'LineWidth',2, 'Color',[44/255, 166/255, 90/255]) % B20
+            plot(t,obj.B20,'LineWidth',2, 'Color',[44/255, 166/255, 90/255]) % B20
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('A_I2', 'Color',[44/255, 166/255, 90/255])
+            ylabel('B20', 'Color',[44/255, 166/255, 90/255])
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1193,13 +1211,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height])
-            plot(t,obj.T_hinge,'LineWidth',2, 'Color',[192/255, 92/255, 185/255]) % B40/B30
+            plot(t,obj.B40B30,'LineWidth',2, 'Color',[192/255, 92/255, 185/255]) % B40/B30
             i=i+1.5;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1])
             set(gca,'YTickLabel',[]);
-            ylabel('T_hinge', 'Color',[192/255, 92/255, 185/255])
+            ylabel('B40/B30', 'Color',[192/255, 92/255, 185/255])
             ylim([ymin ymax])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1208,13 +1226,13 @@ classdef AplysiaFeeding
 
 
             subplot('position',[left top-i*shift width height*2])
-            plot(t,obj.A_hinge,'LineWidth',2, 'Color', [51/255, 185/255, 135/255]) % B4/5
+            plot(t,obj.B4B5,'LineWidth',2, 'Color', [51/255, 185/255, 135/255]) % B4/5
             i=i+1;
             set(gca,'FontSize',16)
             set(gca,'xtick',[])
             set(gca,'ytick',[0,1,2])
             set(gca,'YTickLabel',[]);
-            ylabel('A_hinge', 'Color', [51/255, 185/255, 135/255])
+            ylabel('B4/B5', 'Color', [51/255, 185/255, 135/255])
             ylim([ymin 2])
             xlim(xl)
             hYLabel = get(gca,'YLabel');
@@ -1267,7 +1285,7 @@ classdef AplysiaFeeding
             set(hYLabel,'rotation',0,'VerticalAlignment','middle','HorizontalAlignment','right','Position',get(hYLabel,'Position')-[0.05 0 0])
             set(gca,'XColor','none')
 
-            % For some inexplicable reason Matlab is hiding this plot
+
             subplot('position',[left top-i*shift width height])
             plot(t,obj.B6B9B3,'LineWidth',2, 'Color', [90/255, 155/255, 197/255]) % B6/9/3
             i=i+1;
@@ -1279,38 +1297,6 @@ classdef AplysiaFeeding
             ylim([ymin ymax])
             xlim(xl)
             set(get(gca,'ylabel'),'rotation',0) 
-            hYLabel = get(gca,'YLabel');
-            set(hYLabel,'rotation',0,'VerticalAlignment','middle','HorizontalAlignment','right','Position',get(hYLabel,'Position')-[0.05 0 0])
-            set(gca,'XColor','none')
-            
-            % Simulink force output
-            subplot('position',[left top-i*shift width height*3.5])
-
-            plot(t,obj.force_on_object_simulink,'k','LineWidth',2)
-            i=i+2.5;
-            yticks([-1 0 1])
-            yticklabels({'','0',''})
-
-            set(gca,'FontSize',16)
-            set(gca,'xtick',[])
-            ylabel('Force (Simulink)', 'Color', [0/255, 0/255, 0/255])
-            xlim(xl)
-            set(gca,'XColor','none')
-            hYLabel = get(gca,'YLabel');
-            set(hYLabel,'rotation',0,'VerticalAlignment','middle','HorizontalAlignment','right','Position',get(hYLabel,'Position')-[0.05 0 0])
-            set(gca,'XColor','none')
-            
-            % Simulink grasper motion
-            subplot('position',[left top-i*shift width height*3.5])
-            grasper_motion_simulink = (obj.x_g_simulink-obj.x_h_simulink);
-            plot(t,grasper_motion_simulink,'b','LineWidth',2)
-            i=i+1;
-            set(gca,'FontSize',16)
-            set(gca,'xtick',[])
-            set(gca,'YTickLabel',[]);
-            ylabel({'Grasper';'Motion (Simulink)'}, 'Color', [0/255, 0/255, 255/255])
-            xlim(xl)
-            set(gca,'XColor','none')
             hYLabel = get(gca,'YLabel');
             set(hYLabel,'rotation',0,'VerticalAlignment','middle','HorizontalAlignment','right','Position',get(hYLabel,'Position')-[0.05 0 0])
             set(gca,'XColor','none')
@@ -1418,7 +1404,7 @@ classdef AplysiaFeeding
             hold off
 
 
-            %subplot(18,1,1)
+            %subplot(15,1,15)
             subplot('position',[left top-i*shift width height*3.5])
 
             plot(t,obj.force_on_object,'k','LineWidth',2)

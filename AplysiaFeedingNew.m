@@ -1,12 +1,54 @@
 classdef AplysiaFeedingNew
     properties
+        %Muscle time constants
+        tau_I4 = 1.0/sqrt(2);              %time constant (in seconds) for I4 activation
+        tau_I3anterior = 2.0/sqrt(2);      %time constant (in seconds) for I3anterior activation
+        tau_I3 = 1.0/sqrt(2);              %time constant (in seconds) for I3 activation
+        tau_I2_ingestion = 0.5*1/sqrt(2);  %time constant (in seconds) for I2 activation during ingestion
+        tau_I2_egestion = 1.4*1/sqrt(2);   %time constant (in seconds) for I2 activation during egestion
+        tau_hinge  = 1.0/sqrt(2);          %time constant (in seconds) for hinge activation
+        
+        %Sensory feedback thresholds (theshold_neuron name_behavior_type)
+        thresh_B31_bite_on = 0.9;
+        thresh_B31_bite_off = 0.55;
+        thresh_B31_swallow_on = 0.75;
+        thresh_B31_swallow_off = 0.4;
+        thresh_B31_reject_on = 0.89;
+        thresh_B31_reject_off = 0.6;
+        
+        thresh_B6B9B3_bite_pressure = 0.2;
+        thresh_B6B9B3_swallow_pressure = 0.25;
+        thresh_B6B9B3_reject_pressure = 0.75;
+        
         %neural state variables
         MCC_Init = 1;
         CBI2_Init = 1;
         CBI3_Init = 0;
         CBI4_Init = 0;
+        B20_Init = 0;
+        B40B30_Init = 0;
+        B6B9B3_Init = 0;
+        B8_Init = 0;
         B64_Init = 0;
         B4B5_Init = 0;
+        B31B32_Init = 1;
+        B7_Init = 0;
+        B38_Init = 1;
+        
+        P_I4_Init = 0;
+        A_I4_Init = 0.05;
+        P_I3_anterior_Init = 0;
+        A_I3_anterior_Init = 0.05;
+        T_I3_Init = 0.05;
+        A_I3_Init = 0.05;
+        T_I2_Init = 0.05;
+        A_I2_Init = 0.05;
+        T_hinge_Init = 0;
+        A_hinge_Init = 0.05;
+        
+        %neural timing variables
+        refractory_CBI3 = 5;                 %refractory period (in seconds) of CBI3 post strong B4B5 excitation
+        postActivityExcitation_B40B30 = 3;   %time (in seconds) post B40B30 activity that slow excitation lasts
         
         %sensory state vectors
         % 10000 = finite large value
@@ -39,6 +81,27 @@ classdef AplysiaFeedingNew
         %%
         function obj = AplysiaFeedingNew()
             assignin('base','use_hypothesized_connections',obj.use_hypothesized_connections);
+            
+            assignin('base','tau_I4',obj.tau_I4);
+            assignin('base','tau_I3anterior',obj.tau_I3anterior);
+            assignin('base','tau_I3',obj.tau_I3);
+            assignin('base','tau_I2_ingestion',obj.tau_I2_ingestion);
+            assignin('base','tau_I2_egestion',obj.tau_I2_egestion);
+            assignin('base','tau_hinge',obj.tau_hinge);
+            
+            assignin('base','thresh_B31_bite_on',obj.thresh_B31_bite_on);
+            assignin('base','thresh_B31_bite_off',obj.thresh_B31_bite_off);
+            assignin('base','thresh_B31_swallow_on',obj.thresh_B31_swallow_on);
+            assignin('base','thresh_B31_swallow_off',obj.thresh_B31_swallow_off);
+            assignin('base','thresh_B31_reject_on',obj.thresh_B31_reject_on);
+            assignin('base','thresh_B31_reject_off',obj.thresh_B31_reject_off);
+            
+            assignin('base','thresh_B6B9B3_bite_pressure',obj.thresh_B6B9B3_bite_pressure);
+            assignin('base','thresh_B6B9B3_swallow_pressure',obj.thresh_B6B9B3_swallow_pressure);
+            assignin('base','thresh_B6B9B3_reject_pressure',obj.thresh_B6B9B3_reject_pressure);
+            
+            assignin('base','refractory_CBI3',obj.refractory_CBI3);
+            assignin('base','postActivityExcitation_B40B30',obj.postActivityExcitation_B40B30);
         end
         
         function obj = runSimulation(obj)
@@ -46,8 +109,26 @@ classdef AplysiaFeedingNew
             assignin('base','CBI2_Init',obj.CBI2_Init);
             assignin('base','CBI3_Init',obj.CBI3_Init);
             assignin('base','CBI4_Init',obj.CBI4_Init);
+            assignin('base','B20_Init',obj.B20_Init);
+            assignin('base','B40B30_Init',obj.B40B30_Init);
+            assignin('base','B6B9B3_Init',obj.B6B9B3_Init);
+            assignin('base','B8_Init',obj.B8_Init);
             assignin('base','B64_Init',obj.B64_Init);
             assignin('base','B4B5_Init',obj.B4B5_Init);
+            assignin('base','B31B32_Init',obj.B31B32_Init);
+            assignin('base','B7_Init',obj.B7_Init);
+            assignin('base','B38_Init',obj.B38_Init);
+            
+            assignin('base','P_I4_Init',obj.P_I4_Init);
+            assignin('base','A_I4_Init',obj.A_I4_Init);
+            assignin('base','P_I3_anterior_Init',obj.P_I3_anterior_Init);
+            assignin('base','A_I3_anterior_Init',obj.A_I3_anterior_Init);
+            assignin('base','T_I3_Init',obj.T_I3_Init);
+            assignin('base','A_I3_Init',obj.A_I3_Init);
+            assignin('base','T_I2_Init',obj.T_I2_Init);
+            assignin('base','A_I2_Init',obj.A_I2_Init);
+            assignin('base','T_hinge_Init',obj.T_hinge_Init);
+            assignin('base','A_hinge_Init',obj.A_hinge_Init);
             
             assignin('base','sensory_trigger_time',obj.sensory_trigger_time);
             assignin('base','sens_mechanical_lips_initial',obj.sens_mechanical_lips_initial);
