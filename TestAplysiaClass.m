@@ -7,8 +7,8 @@ xlimits = [0 40];
 aplysia = AplysiaSimulink();
 simFileName = "Test"
 aplysia.switchBehavior = 0;   %only behavior_1 is simulated 
-aplysia.behavior_1 = double(FeedingBehavior.swallow);
-aplysia.behavior_2 = double(FeedingBehavior.swallow);
+aplysia.behavior_1 = double(FeedingBehavior.reject);
+aplysia.behavior_2 = double(FeedingBehavior.reject);
 aplysia.t_switch = 0; %time to switch
 aplysia.stoptime = 40;
 %aplysia.initialize();
