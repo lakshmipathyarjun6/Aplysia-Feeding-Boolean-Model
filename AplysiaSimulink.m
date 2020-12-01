@@ -191,8 +191,7 @@ classdef AplysiaSimulink
         function obj = runSimulation(obj )
             obj = obj.initialize;
             out = sim(obj.simFileName,'StartTime','0','StopTime',string(obj.stoptime), 'FixedStep', string(obj.init_obj.TimeStep));
-            outStruct = out.outputStruct;  
-            obj.outStruct = out.outputStruct
+            obj.outStruct = out.outputStruct;
         end
         
         function obj = initialize(obj)
@@ -216,6 +215,8 @@ classdef AplysiaSimulink
         function generatePlots(obj,label,xlimits)
             %t=obj.StartingTime:obj.TimeStep:obj.EndTime;
             ps= obj.outStruct
+
+            disp(ps)
 
             figure('Position', [10 10 1200 600]);
             set(gcf,'Color','white')
