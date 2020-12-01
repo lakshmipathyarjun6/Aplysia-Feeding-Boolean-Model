@@ -1,3 +1,12 @@
+#bus_simulink branch:
+Uses a bus to simplify the connection of information being transported between blocks.  Currently implements the sensory state, neural control and biomechanics as separate matlab function blocks.  Next step is to replace biomechanics block with the pure simulink implementation.
+
+The bus definition and initialization are defined in the class defined in "AplysiaSimulink.m"
+
+The simulink implementation is in "Test.slx"
+
+A file that instantiates the class, runs the simulink simulation and generates the plot is found in "TestAplysiaClass.m"
+
 # Aplysia-Feeding-Boolean-Model
 Discrete time, discrete state representation of Aplysia central pattern generator for multifunctional feeding behavior, coupled to continuous, (relatively) low biomechanics.  
 Archived source code is available through Zenodo [![DOI](https://zenodo.org/badge/261357750.svg)](https://zenodo.org/badge/latestdoi/261357750)
