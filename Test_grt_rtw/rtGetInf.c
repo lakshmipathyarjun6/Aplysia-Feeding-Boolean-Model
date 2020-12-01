@@ -7,9 +7,9 @@
  *
  * Code generation for model "Test".
  *
- * Model version              : 1.65
+ * Model version              : 1.77
  * Simulink Coder version : 9.2 (R2019b) 18-Jul-2019
- * C source code generated on : Mon Nov 30 18:21:41 2020
+ * C source code generated on : Tue Dec  1 12:05:10 2020
  *
  * Target selection: grt.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping

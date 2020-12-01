@@ -55,6 +55,10 @@ classdef AplysiaSimulink
             %initialize electrodes to zero
             init_obj.stim_B4B5 = 0;
             init_obj.stim_CBI2 = 0;
+            
+            %for integration, initialize x_h and x_g
+            init_obj.x_h_init = 0;
+            init_obj.x_g_init = 0.1;
 
 
 
@@ -162,7 +166,7 @@ classdef AplysiaSimulink
             "grasper_friction_state", "jaw_friction_state", "seaweed_strength", "fixation_type", "force_on_object",...
             "sens_chemical_lips", "sens_mechanical_lips", "sens_mechanical_grasper", "use_hypothesized_connections", "stim_B4B5", "stim_CBI2",...
             "CBI3_stimON","CBI3_stimOFF","CBI3_refractory","B40B30_offTime","unbroken", ...
-            "switchBehavior","behavior_1","behavior_2","t_switch"]
+            "switchBehavior","behavior_1","behavior_2","t_switch", "x_h_init", "x_g_init"]
 
         clear elems init_obj
 
@@ -185,13 +189,17 @@ classdef AplysiaSimulink
         
         
         function obj = runSimulation(obj )
+            obj = obj.initialize;
+            out = sim(obj.simFileName,'StartTime','0','StopTime',string(obj.stoptime), 'FixedStep', string(obj.init_obj.TimeStep));
+            outStruct = out.outputStruct;  
+            obj.outStruct = out.outputStruct
+        end
+        
+        function obj = initialize(obj)
             obj.init_obj = obj.initializeStruct( obj.switchBehavior, double(obj.behavior_1), double(obj.behavior_2), obj.t_switch); 
             obj.AplysiaBus = obj.initializeBus();   
             assignin('base','AplysiaBus',obj.AplysiaBus)
             assignin('base','init_obj',obj.init_obj)
-            out = sim(obj.simFileName,'StartTime','0','StopTime',string(obj.stoptime), 'FixedStep', string(obj.init_obj.TimeStep));
-            outStruct = out.outputStruct;  
-            obj.outStruct = out.outputStruct
         end
         
         

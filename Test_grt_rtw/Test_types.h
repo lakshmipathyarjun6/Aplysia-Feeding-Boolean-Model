@@ -7,9 +7,9 @@
  *
  * Code generation for model "Test".
  *
- * Model version              : 1.65
+ * Model version              : 1.77
  * Simulink Coder version : 9.2 (R2019b) 18-Jul-2019
- * C source code generated on : Mon Nov 30 18:21:41 2020
+ * C source code generated on : Tue Dec  1 12:05:10 2020
  *
  * Target selection: grt.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -118,8 +118,8 @@ typedef struct {
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_struct_GCi64OmJNeKqyk0PC55G2E_
-#define DEFINED_TYPEDEF_FOR_struct_GCi64OmJNeKqyk0PC55G2E_
+#ifndef DEFINED_TYPEDEF_FOR_struct_onFJSroRbB20AxaUYMb93G_
+#define DEFINED_TYPEDEF_FOR_struct_onFJSroRbB20AxaUYMb93G_
 
 typedef struct {
   real_T MCC;
@@ -150,6 +150,7 @@ typedef struct {
   real_T grasper_friction_state;
   real_T jaw_friction_state;
   real_T force_on_object;
+  real_T use_hypothesized_connections;
   real_T stim_B4B5;
   real_T stim_CBI2;
   real_T TimeStep;
@@ -166,6 +167,8 @@ typedef struct {
   real_T tau_I2_egestion;
   real_T tau_I3;
   real_T tau_hinge;
+  real_T c_g;
+  real_T c_h;
   real_T K_sp_h;
   real_T K_sp_g;
   real_T x_h_ref;
@@ -203,9 +206,18 @@ typedef struct {
   real_T behavior_1;
   real_T behavior_2;
   real_T t_switch;
-} struct_GCi64OmJNeKqyk0PC55G2E;
+} struct_onFJSroRbB20AxaUYMb93G;
 
 #endif
+
+/* Parameters for system: '<S6>/Enabled Subsystem' */
+typedef struct P_EnabledSubsystem_Test_T_ P_EnabledSubsystem_Test_T;
+
+/* Parameters for system: '<S27>/Kinetic Friction Behavior' */
+typedef struct P_KineticFrictionBehavior_Tes_T_ P_KineticFrictionBehavior_Tes_T;
+
+/* Parameters for system: '<S27>/Static Friction Behavior' */
+typedef struct P_StaticFrictionBehavior_Test_T_ P_StaticFrictionBehavior_Test_T;
 
 /* Parameters (default storage) */
 typedef struct P_Test_T_ P_Test_T;

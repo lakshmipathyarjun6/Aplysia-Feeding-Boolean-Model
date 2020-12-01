@@ -2,7 +2,7 @@
 ## Makefile generated for Simulink model 'Test'. 
 ## 
 ## Makefile     : Test.mk
-## Generated on : Mon Nov 30 14:06:46 2020
+## Generated on : Tue Dec 01 12:05:27 2020
 ## MATLAB Coder version: 4.3 (R2019b)
 ## 
 ## Build Info:
@@ -29,7 +29,7 @@ MATLAB_ROOT               = C:\PROGRA~1\MATLAB\R2019b
 MATLAB_BIN                = C:\PROGRA~1\MATLAB\R2019b\bin
 MATLAB_ARCH_BIN           = $(MATLAB_BIN)\win64
 MASTER_ANCHOR_DIR         = 
-START_DIR                 = C:\Users\mecha\OneDrive\Desktop\CMU\Courses\BIOMEC~1\Project\APLYSI~1\APLYSI~1
+START_DIR                 = C:\Users\mecha\OneDrive\Desktop\CMU\Courses\BIOMEC~1\Project\APLYSI~1\BUS_SI~1
 SOLVER                    = 
 SOLVER_OBJ                = 
 CLASSIC_INTERFACE         = 0
@@ -181,7 +181,7 @@ INCLUDES = $(INCLUDES_BUILDINFO)
 DEFINES_BUILD_ARGS = -DCLASSIC_INTERFACE=0 -DALLOCATIONFCN=0 -DMAT_FILE=1 -DONESTEPFCN=1 -DTERMFCN=1 -DMULTI_INSTANCE_CODE=0 -DINTEGER_CODE=0 -DMT=0
 DEFINES_CUSTOM = 
 DEFINES_IMPLIED = -DTID01EQ=1
-DEFINES_STANDARD = -DMODEL=Test -DNUMST=2 -DNCSTATES=0 -DHAVESTDIO -DRT -DUSE_RTMODEL
+DEFINES_STANDARD = -DMODEL=Test -DNUMST=2 -DNCSTATES=2 -DHAVESTDIO -DRT -DUSE_RTMODEL
 
 DEFINES = $(DEFINES_BUILD_ARGS) $(DEFINES_CUSTOM) $(DEFINES_IMPLIED) $(DEFINES_STANDARD)
 

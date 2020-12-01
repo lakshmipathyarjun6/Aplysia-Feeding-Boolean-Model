@@ -11,9 +11,8 @@ aplysia.behavior_1 = double(FeedingBehavior.swallow);
 aplysia.behavior_2 = double(FeedingBehavior.swallow);
 aplysia.t_switch = 0; %time to switch
 aplysia.stoptime = 40;
+%aplysia.initialize();
+
 aplysia = aplysia.runSimulation();
-
-
 aplysia.generatePlots(['Swallow_' suffix],xlimits);
 
-%aplysia = aplysia.initializeStruct(0, 1 , 1, 0)
