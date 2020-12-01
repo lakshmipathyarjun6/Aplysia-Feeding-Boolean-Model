@@ -22,7 +22,11 @@ aplysia = aplysia.setSensoryStates('swallow');
 tic
 aplysia = aplysia.runSimulation();
 toc
+<<<<<<< Updated upstream:AplysiaFeeding_driver.m
 aplysia.generatePlots(['Swallow_' suffix],xlimits);
+=======
+%aplysia.generatePlots(['Swallow_' suffix],xlimits);
+>>>>>>> Stashed changes:Other Files/AplysiaFeeding_driver.m
 
 
 % %% Multifunctional swallowing of different strength seaweeds
