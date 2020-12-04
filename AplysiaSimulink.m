@@ -12,10 +12,8 @@ classdef AplysiaSimulink
     end
     
     methods
-        function init_obj = initializeStruct(obj, switchBehavior, behavior_1, behavior_2, t_switch)           
-            %--------------
-            %initialization
-            %--------------
+        function init_obj = initializeStruct(obj, switchBehavior, behavior_1, behavior_2, t_switch, inarg)           
+            
 
             init_obj.MCC = 1;
             init_obj.CBI2 = 1;
@@ -147,6 +145,18 @@ classdef AplysiaSimulink
             init_obj.t_switch = t_switch;            %time to switch
             
             
+            %--------------
+            %initialization based on inarg struct
+            %--------------
+            
+            fnames = fieldnames(inarg)
+            for m = 1:length(fnames)
+                fn = fnames(m);
+                fn=fn{1};
+                init_obj.(fn)=inarg.(fn);
+            end
+            
+            
         end
         
         
@@ -188,14 +198,14 @@ classdef AplysiaSimulink
         
         
         
-        function obj = runSimulation(obj )
-            obj = obj.initialize;
-            out = sim(obj.simFileName,'StartTime','0','StopTime',string(obj.stoptime), 'FixedStep', string(obj.init_obj.TimeStep));
+        function obj = runSimulation(obj, inarg )
+            obj = obj.initialize(inarg);
+            out = sim(obj.simFileName,'StartTime','0','StopTime',string(obj.init_obj.EndTime), 'FixedStep', string(obj.init_obj.TimeStep));
             obj.outStruct = out.outputStruct;
         end
         
-        function obj = initialize(obj)
-            obj.init_obj = obj.initializeStruct( obj.switchBehavior, double(obj.behavior_1), double(obj.behavior_2), obj.t_switch); 
+        function obj = initialize(obj, inarg)
+            obj.init_obj = obj.initializeStruct( obj.switchBehavior, double(obj.behavior_1), double(obj.behavior_2), obj.t_switch, inarg); 
             obj.AplysiaBus = obj.initializeBus();   
             assignin('base','AplysiaBus',obj.AplysiaBus)
             assignin('base','init_obj',obj.init_obj)
@@ -214,9 +224,9 @@ classdef AplysiaSimulink
 
         function generatePlots(obj,label,xlimits)
             %t=obj.StartingTime:obj.TimeStep:obj.EndTime;
-            ps= obj.outStruct
+            ps= obj.outStruct;
 
-            disp(ps)
+            disp(ps);
 
             figure('Position', [10 10 1200 600]);
             set(gcf,'Color','white')
