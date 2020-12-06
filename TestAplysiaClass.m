@@ -44,9 +44,11 @@ aplysia_MATLAB = aplysia_MATLAB.runSimulation();
 
 figure()
 hold on
-plot(aplysia.outStruct.force_on_object.Time,aplysia.outStruct.force_on_object.Data,'k','LineWidth',2) %simulink
-plot(t,aplysia_MATLAB.force_on_object,'b--','LineWidth',2); %MATLAB
-
+plot(aplysia.outStruct.force_on_object.Time,aplysia.outStruct.force_on_object.Data,'k','LineWidth',2,'DisplayName','Simulink Model') %simulink
+plot(t,aplysia_MATLAB.force_on_object,'b--','LineWidth',2, 'DisplayName', 'Original Boolean Model'); %MATLAB
+xlabel('time (s)')
+ylabel('Force on object')
+legend()
 
 
 % %%--------------
