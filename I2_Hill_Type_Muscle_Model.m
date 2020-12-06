@@ -12,7 +12,7 @@ classdef I2_Hill_Type_Muscle_Model
             obj.I2_struct.a0=0.165;
             obj.I2_struct.g_scale=2.0;
             obj.I2_struct.L_st=0; %[m]
-            obj.I2_struct.F0=150/1000; %[N] Maximum isometric Force
+            obj.I2_struct.F0=150*10/1000; %[N] Maximum isometric Force
             obj.I2_struct.L_mto=18.3/1000; %[m]
             obj.I2_struct.L_0 = 0.858*obj.I2_struct.L_mto; %[m]
 
