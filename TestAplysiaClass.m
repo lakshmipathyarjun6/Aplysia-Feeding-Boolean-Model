@@ -9,7 +9,7 @@ xlimits = [0 40];
 aplysia = AplysiaSimulink();
 simFileName = "Test"
 aplysia.switchBehavior = 0;   %only behavior_1 is simulated 
-aplysia.behavior_1 = double(FeedingBehavior.swallow);
+aplysia.behavior_1 = double(FeedingBehavior.reject);
 aplysia.behavior_2 = double(FeedingBehavior.reject);
 aplysia.t_switch = 20; %time to switch
 
@@ -31,6 +31,11 @@ aplysia = aplysia.runSimulation(inargs);
 aplysia.generatePlots(['Swallow_' suffix],xlimits);
 %end run simulink model
 
+% yu_hillTypeMuscleModel = aplysia.outStruct.force_on_object.Data
+% USE_YU_I2_HILL_TYPE_MUSCLE_MODEL = 0;
+% aplysia = aplysia.runSimulation(inargs);
+% OriginalModel = aplysia.outStruct.force_on_object.Data;
+
 
 %%-----------------
 %%compare to MATLAB
@@ -39,13 +44,14 @@ aplysia_MATLAB = AplysiaFeeding_MATLAB(inargs );
 
 
 t=aplysia_MATLAB.StartingTime:aplysia_MATLAB.TimeStep:aplysia_MATLAB.EndTime;
-aplysia_MATLAB = aplysia_MATLAB.setSensoryStates('swallow');
+aplysia_MATLAB = aplysia_MATLAB.setSensoryStates('reject');
 aplysia_MATLAB = aplysia_MATLAB.runSimulation();
 
 figure()
 hold on
 plot(aplysia.outStruct.force_on_object.Time,aplysia.outStruct.force_on_object.Data,'k','LineWidth',2,'DisplayName','Simulink Model') %simulink
 plot(t,aplysia_MATLAB.force_on_object,'b--','LineWidth',2, 'DisplayName', 'Original Boolean Model'); %MATLAB
+%plot(aplysia.outStruct.force_on_object.Time,yu_hillTypeMuscleModel,'g','LineWidth',2,'DisplayName','Simulink Model') %simulink
 xlabel('time (s)')
 ylabel('Force on object')
 legend()
