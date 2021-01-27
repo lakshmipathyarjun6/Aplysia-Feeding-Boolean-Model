@@ -9,6 +9,7 @@ classdef AplysiaSimulink
         behavior_1
         behavior_2
         t_switch
+        solver = "ode3"
     end
     
     methods
@@ -49,6 +50,8 @@ classdef AplysiaSimulink
 
             %switches
             init_obj.use_hypothesized_connections = 0; %1 = yes, 0 = no
+            
+            
 
             %initialize electrodes to zero
             init_obj.stim_B4B5 = 0;
@@ -176,7 +179,7 @@ classdef AplysiaSimulink
             "grasper_friction_state", "jaw_friction_state", "seaweed_strength", "fixation_type", "force_on_object",...
             "sens_chemical_lips", "sens_mechanical_lips", "sens_mechanical_grasper", "use_hypothesized_connections", "stim_B4B5", "stim_CBI2",...
             "CBI3_stimON","CBI3_stimOFF","CBI3_refractory","B40B30_offTime","unbroken", ...
-            "switchBehavior","behavior_1","behavior_2","t_switch", "x_h_init", "x_g_init"]
+            "switchBehavior","behavior_1","behavior_2","t_switch", "x_h_init", "x_g_init"];
 
         clear elems init_obj
 
@@ -200,7 +203,14 @@ classdef AplysiaSimulink
         
         function obj = runSimulation(obj, inarg )
             obj = obj.initialize(inarg);
-            out = sim(obj.simFileName,'StartTime','0','StopTime',string(obj.init_obj.EndTime), 'FixedStep', string(obj.init_obj.TimeStep));
+            if (~isnan(obj.init_obj.TimeStep))
+                out = sim(obj.simFileName,'StartTime','0','StopTime',string(obj.init_obj.EndTime), 'FixedStep', string(obj.init_obj.TimeStep), 'Solver',obj.solver );
+            else
+                out = sim(obj.simFileName,'StartTime','0','StopTime',string(obj.init_obj.EndTime),'Solver',obj.solver );
+            end
+                
+            %out = sim(obj.simFileName,'StartTime','0','StopTime',string(obj.init_obj.EndTime), 'FixedStep', string(obj.init_obj.TimeStep));
+            
             obj.outStruct = out.outputStruct;
         end
         

@@ -2,24 +2,26 @@ close all
 clear all
 
 suffix = '_8_9_2020';
-xlimits = [0 40];
+xlimits = [0 65];
 
 
 %set initialization parameters for simulink model
 aplysia = AplysiaSimulink();
-simFileName = "Test"
+aplysia.simFileName = "Test"
 aplysia.switchBehavior = 0;   %only behavior_1 is simulated 
 aplysia.behavior_1 = double(FeedingBehavior.reject);
 aplysia.behavior_2 = double(FeedingBehavior.reject);
 aplysia.t_switch = 20; %time to switch
 
-inargs.TimeStep=0.001;
+aplysia.solver= "ode14x"
+inargs.TimeStep=0.001; %set to NaN to use variable step
+
 inargs.EndTime=xlimits(2);
 % end set initialization parameters
 
 %Switches
-USE_PURE_MATLAB_BIOMECHANICS = 0; %1 = use pure matlab biomechanics block.  0 = use simulink based biomechanics implementation.
-USE_YU_I2_HILL_TYPE_MUSCLE_MODEL = 1; %1 = use Yu Hill Type Muscle Model.  0 = use original force model
+USE_PURE_MATLAB_BIOMECHANICS = 1; %1 = use pure matlab biomechanics block.  0 = use simulink based biomechanics implementation.
+USE_YU_I2_HILL_TYPE_MUSCLE_MODEL = 0; %1 = use Yu Hill Type Muscle Model.  0 = use original force model
 %end switches
 
 %initialize I2 Hill TYpe Muscle Model parameters
@@ -49,7 +51,7 @@ aplysia_MATLAB = aplysia_MATLAB.runSimulation();
 
 figure()
 hold on
-plot(aplysia.outStruct.force_on_object.Time,aplysia.outStruct.force_on_object.Data,'k','LineWidth',2,'DisplayName','Simulink Model') %simulink
+plot(aplysia.outStruct.force_on_object.Time,aplysia.outStruct.force_on_object.Data,'k','LineWidth',2,'DisplayName','1D Simulink Model + Hill Type Muscle Model') %simulink
 plot(t,aplysia_MATLAB.force_on_object,'b--','LineWidth',2, 'DisplayName', 'Original Boolean Model'); %MATLAB
 %plot(aplysia.outStruct.force_on_object.Time,yu_hillTypeMuscleModel,'g','LineWidth',2,'DisplayName','Simulink Model') %simulink
 xlabel('time (s)')
