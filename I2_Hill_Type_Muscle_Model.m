@@ -23,7 +23,7 @@ classdef I2_Hill_Type_Muscle_Model
             obj.I2_struct.activation_freq=20; %[Hz] frequency of sinusoid input
 
             obj.I2_struct.v_max=0.007; % [m s^-1] %shortening velocity
-            obj.I2_struct.k_I2 = 2.68; %scale factor to span l_mt so that it matches x_gh from l/l_mt0 in range [0,1] 
+            obj.I2_struct.k_I2 = 3.05; %scale factor to span l_mt so that it matches x_gh from l/l_mt0 in range [0,1] 
             
             
             assignin('base','I2_struct',obj.I2_struct)
